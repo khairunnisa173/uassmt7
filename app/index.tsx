@@ -27,13 +27,13 @@ const menuItems: MenuItem[] = [
     id: '3',
     title: 'Metode Pembayaran',
     icon: <Ionicons name="card" size={50} color="#2196F3" />,
-    screen: '/MetodePembayarancreen',
+    screen: '/MetodePembayaranScreen',
   },
   {
     id: '4',
     title: 'Transaksi',
     icon: <MaterialIcons name="receipt" size={50} color="#F44336" />,
-    screen: '/TransactionScreen',
+    screen: '/TransaksiScreen',
   },
 ];
 
