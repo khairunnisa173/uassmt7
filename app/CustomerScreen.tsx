@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
 
 type Customer = {
   id: string;
@@ -9,26 +10,69 @@ type Customer = {
   address: string;
 };
 
-const customers: Customer[] = [
-  {
-    id: '1',
-    name: 'icha',
-    phone: '087903456123',
-    address: 'teja timur',
-  },
-];
+const API_URL = 'http://127.0.0.1:8000/api/customer/';
 
 const CustomerScreen: React.FC = () => {
-  const handleEdit = (id: string) => {
-    console.log('Edit customer:', id);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  // Fetch customers from the API
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setCustomers(response.data);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch customers');
+      console.error(error);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete customer:', id);
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  // Add a new customer
+  const handleAdd = async () => {
+    try {
+      const newCustomer = {
+        name: 'launa',
+        phone: '0000000000',
+        address: 'pakong',
+      };
+      const response = await axios.post(API_URL, newCustomer);
+      setCustomers([...customers, response.data]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add customer');
+      console.error(error);
+    }
   };
 
-  const handleAdd = () => {
-    console.log('Add new customer');
+  // Edit a customer
+  const handleEdit = async (id: string) => {
+    try {
+      const updatedCustomer = {
+        name: 'Updated Name',
+        phone: '1111111111',
+        address: 'Updated Address',
+      };
+      await axios.put(`${API_URL}${id}/`, updatedCustomer);
+      setCustomers((prev) =>
+        prev.map((customer) => (customer.id === id ? { ...customer, ...updatedCustomer } : customer))
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to edit customer');
+      console.error(error);
+    }
+  };
+
+  // Delete a customer
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`${API_URL}${id}/`);
+      setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+    } catch (error) {
+      Alert.alert('Error', 'Failed to delete customer');
+      console.error(error);
+    }
   };
 
   const renderItem = ({ item }: { item: Customer }) => (
